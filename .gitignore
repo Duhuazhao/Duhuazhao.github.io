@@ -1,0 +1,7 @@
+dist/
+.wrangler/
+site-build.tar.gz
+*.log
+preview-*.png
+!assets/operations-dashboard/preview-ai-demo.png
+.lan-preview-*.json
