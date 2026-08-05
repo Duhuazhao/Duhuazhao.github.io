@@ -2820,6 +2820,45 @@
       font-weight: 800;
     }
 
+    .desktop-demo-note {
+      display: flex;
+      width: fit-content;
+      max-width: 680px;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 22px;
+      padding: 10px 13px;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+      color: var(--ink);
+      font-size: 0.76rem;
+      line-height: 1.55;
+    }
+
+    .desktop-demo-note::before {
+      display: inline-grid;
+      min-width: 34px;
+      height: 24px;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      content: "PC";
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .desktop-demo-note strong {
+      margin-right: 5px;
+      font-weight: 850;
+    }
+
+    .completed-showcase .desktop-demo-note {
+      border-left-color: #8fb0ff;
+      background: rgba(143, 176, 255, 0.12);
+      color: rgba(244, 240, 231, 0.84);
+    }
+
     .demo-controls {
       display: grid;
       grid-template-columns: minmax(240px, 0.7fr) minmax(280px, 1.3fr);
@@ -5367,6 +5406,20 @@
         box-shadow: 6px 6px 0 var(--orange);
       }
 
+      .desktop-demo-note {
+        width: 100%;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding: 12px 13px;
+        border-left-width: 4px;
+        font-size: 0.78rem;
+      }
+
+      .desktop-demo-note strong {
+        display: block;
+        margin: 0 0 2px;
+      }
+
       .data-dashboard-app {
         display: block;
       }
@@ -6232,6 +6285,7 @@
             <span>AI 模拟数据</span>
           </div>
           <div class="demo-disclaimer">数据由 AI 生成 · 仅用于演示 · 非真实经营数据</div>
+          <aside class="desktop-demo-note" role="note"><span><strong>完整体验提示</strong>演示功能针对 PC 端开发，请使用 PC 进行完整体验；手机端暂未适配。</span></aside>
           <button class="demo-button" id="openDataDashboard" type="button" data-open-data-dashboard>进入经营数据看板　→</button>
         </div>
         <button class="dashboard-preview" type="button" data-open-data-dashboard aria-label="查看完整经营数据看板">
@@ -6254,6 +6308,7 @@
         </p>
 
         <div class="demo-disclaimer">交互概念演示 · 所有任务与经营指标均为模拟数据</div>
+        <aside class="desktop-demo-note" role="note"><span><strong>完整体验提示</strong>演示功能针对 PC 端开发，请使用 PC 进行完整体验；手机端暂未适配。</span></aside>
 
         <div class="demo-controls">
           <label class="demo-field" for="campaignGoal">
