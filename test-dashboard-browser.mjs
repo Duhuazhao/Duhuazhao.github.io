@@ -51,6 +51,17 @@ for (const module of modules) {
   assert.match(visibleText, /\d/, `${module.title} should expose populated metrics`);
 }
 
+await page.locator('[data-page-target="consumer-insight"]').first().click();
+await page.locator(".bundle-summary-card").first().waitFor({ state: "visible" });
+const bundleSummary = await page.locator(".bundle-summary-card").allTextContents();
+const bundleChart = await page.locator(".bundle-bar-row").allTextContents();
+assert.equal(bundleSummary.length, 3);
+assert.equal(bundleChart.length, 3);
+assert.match(bundleSummary[0], /非套购[\s\S]*71\.90%[\s\S]*371 单[\s\S]*64\.00%/);
+assert.match(bundleSummary[1], /同三级类目套购[\s\S]*18\.02%[\s\S]*93 单[\s\S]*22\.00%/);
+assert.match(bundleSummary[2], /跨三级类目套购[\s\S]*10\.08%[\s\S]*52 单[\s\S]*14\.00%/);
+assert.doesNotMatch(bundleChart.join(" "), /0\.00%\s*0 单/);
+
 await page.locator('[data-page-target="order-income"]').first().click();
 const moneyValues = await page.locator('[data-page="order-income"] .metric-card .metric-value').evaluateAll((nodes) =>
   nodes.slice(0, 3).map((node) => Number(node.textContent.replace(/[^\d.-]/g, ""))),

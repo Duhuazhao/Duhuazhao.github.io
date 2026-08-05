@@ -5,8 +5,7 @@
   const CACHE_TTL = 30 * 60 * 1000;
   const COMMERCE_API = "./demo-api";
   const DASHBOARD_API_ROUTE = "dashboard-data";
-  const COMMERCE_STATIC_DASHBOARD = "./dashboard-demo.json";
-  const USE_STATIC_DEMO = true;
+  const COMMERCE_STATIC_DASHBOARD = "./dashboard-demo.json?v=20260805-bundle-fix";
   const commerceState = { source: "dynamic", batch: "ai-demo-2026-08", snapshotAt: "AI_GENERATED_DEMO", degraded: false };
   let bundlePromise = null;
 
@@ -209,25 +208,11 @@
   async function loadDashboardBundle() {
     if (bundlePromise) return bundlePromise;
     bundlePromise = (async () => {
-      let payload;
-      if (canUseFetch() && !USE_STATIC_DEMO) {
-        try {
-          const response = await fetch(`${COMMERCE_API}/${DASHBOARD_API_ROUTE}`, { cache: "no-cache" });
-          if (!response.ok) throw new Error(`Commerce dashboard failed: ${response.status}`);
-          payload = await response.json();
-          commerceState.source = "dynamic"; commerceState.batch = payload.meta?.commerce_publish_batch_id || null;
-          commerceState.snapshotAt = payload.meta?.source_snapshot_at || null; commerceState.degraded = false;
-        } catch {
-          // The entire page falls back together, never individual legacy chunks.
-        }
-      }
-      if (!payload) {
-        const response = await fetch(COMMERCE_STATIC_DASHBOARD, { cache: "no-cache" });
-        if (!response.ok) throw new Error("No dashboard data source is available");
-        payload = await response.json();
-        commerceState.source = "dynamic"; commerceState.batch = payload.commerce_publish_batch_id || null;
-        commerceState.snapshotAt = null; commerceState.degraded = false;
-      }
+      const response = await fetch(COMMERCE_STATIC_DASHBOARD, { cache: "no-cache" });
+      if (!response.ok) throw new Error("No dashboard data source is available");
+      const payload = await response.json();
+      commerceState.source = "dynamic"; commerceState.batch = payload.meta?.commerce_publish_batch_id || "AI-DEMO";
+      commerceState.snapshotAt = payload.meta?.source_snapshot_at || "AI_GENERATED_DEMO"; commerceState.degraded = false;
       Object.assign(data, adaptDashboardBundle(payload));
       loaded.add("dashboard");
       document.dispatchEvent(new CustomEvent("dashboard:data-loaded", { detail: { name: "dashboard" } }));

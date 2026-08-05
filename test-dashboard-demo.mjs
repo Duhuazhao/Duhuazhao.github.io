@@ -58,6 +58,26 @@ assert.ok(Math.abs(conversion.conversionRate - conversion.convertedUserCount / c
 
 const distribution = await demoJson(`/demo-api/dashboard-data/bundle-distribution?${query}`);
 assert.ok(distribution.bundleDaily.length > 0);
+for (const row of distribution.bundleDaily) {
+  const bucketOrderTotal = row.buckets.reduce((total, bucket) => total + bucket.orderCount, 0);
+  const bucketAmountTotal = row.buckets.reduce((total, bucket) => total + bucket.amount, 0);
+  const bundleTypeOrderTotal = row.categoryBundleTypes.reduce((total, bucket) => total + bucket.orderCount, 0);
+  const bundleTypeAmountTotal = row.categoryBundleTypes.reduce((total, bucket) => total + bucket.amount, 0);
+  const single = row.categoryBundleTypes.find((bucket) => bucket.key === "singleProduct");
+  const same = row.categoryBundleTypes.find((bucket) => bucket.key === "sameCategory3");
+  const cross = row.categoryBundleTypes.find((bucket) => bucket.key === "crossCategory3");
+
+  assert.equal(bucketOrderTotal, row.totalOrderCount);
+  assert.ok(Math.abs(bucketAmountTotal - row.totalAmount) < 0.02);
+  assert.equal(bundleTypeOrderTotal, row.totalOrderCount);
+  assert.ok(Math.abs(bundleTypeAmountTotal - row.totalAmount) < 0.02);
+  assert.equal(same.orderCount + cross.orderCount, row.multiItemOrderCount);
+  assert.ok(Math.abs((same.amount + cross.amount) - row.multiItemAmount) < 0.02);
+  assert.equal(single.orderCount + row.multiItemOrderCount, row.totalOrderCount);
+  assert.ok(Math.abs((single.amount + row.multiItemAmount) - row.totalAmount) < 0.02);
+  assert.ok(same.orderCount > 0);
+  assert.ok(cross.orderCount > 0);
+}
 
 const products = await demoJson(`/demo-api/products/ranking?${query}&limit=24`);
 assert.equal(products.pagination.total, 24);

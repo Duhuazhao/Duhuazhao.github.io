@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>京东 POP 业务经营驾驶舱</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23132239'/%3E%3Ccircle cx='44' cy='20' r='8' fill='%236574e8'/%3E%3Cpath d='M16 18h18v8H24v8h10v8H24v8h-8z' fill='%23fffdf8'/%3E%3C/svg%3E">
   <style>
 /* JD POP Brand Cockpit Theme
    A warm, refined design system for premium maternal-and-child business analytics. */
@@ -3255,6 +3254,7 @@ body.product-dashboard-active .active-filter-chips {
   .product-metric-filter-panel { left: auto; right: 0; }
 }
   </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23132239'/%3E%3Ccircle cx='44' cy='20' r='8' fill='%236574e8'/%3E%3Cpath d='M16 18h18v8H24v8h10v8H24v8h-8z' fill='%23fffdf8'/%3E%3C/svg%3E">
 
   <style>
     .portfolio-demo-disclosure {
@@ -3316,6 +3316,10 @@ body.product-dashboard-active .active-filter-chips {
         <button type="button" class="sidebar-item" data-page-target="aftersale-analysis">
           <span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z"></path><path d="M9 3h6"></path><path d="M9 21h6"></path><path d="M3 9v6"></path><path d="M21 9v6"></path></svg></span>
           售后分析
+        </button>
+        <button type="button" class="sidebar-item">
+          <span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg></span>
+          数据报表
         </button>
       </div>
       <div class="brand-card">
@@ -3527,8 +3531,8 @@ body.product-dashboard-active .active-filter-chips {
   <div class="tooltip" id="tooltip"></div>
 
   <script>window.JD_AFTERSALE_LIVE_BASE = "./demo-api";</script>
-  <script src="jd_promotion_demo.js"></script>
-  <script src="jd_dashboard_api.js?v=20260720-promotion-api-scope"></script>
+  <script src="jd_promotion_demo.js?v=20260805-bundle-fix"></script>
+  <script src="jd_dashboard_api.js?v=20260805-bundle-fix"></script>
 <script src="jd_aftersale_dashboard.js?v=20260723-aftersale-date-guard"></script>
   <script>
     let DASHBOARD_DATA = window.JD_DASHBOARD_API.getInitialData();
@@ -6029,7 +6033,7 @@ body.product-dashboard-active .active-filter-chips {
         })
       );
       const rows = bucketDefs.map((bucketDef) => {
-        const bucket = totals[dataKey]?.[bucketDef.key] || {
+        const bucket = totals[dataKey]?.[bucketDef.key] || bucketDef || {
           label: bucketDef.label,
           note: bucketDef.note,
           orderCount: 0,

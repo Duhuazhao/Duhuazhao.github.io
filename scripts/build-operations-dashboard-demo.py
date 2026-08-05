@@ -113,12 +113,34 @@ def build_demo_bundle() -> dict:
                     customer_segments[window].append(adjusted)
 
             total_orders = order_count
+
+            # 套购演示口径：28% 的订单购买两种及以上商品，并贡献 36% 的成交额。
+            # 订单数和金额都先计算互斥分组，再用差额回填末组，确保各组严格加总到总盘。
+            single_order_count = round(total_orders * 0.72)
+            product2_order_count = round(total_orders * 0.19)
+            product3_order_count = round(total_orders * 0.06)
+            product4_order_count = round(total_orders * 0.02)
+            product5_order_count = total_orders - single_order_count - product2_order_count - product3_order_count - product4_order_count
+
+            single_amount = round2(net_amount * 0.64)
+            product2_amount = round2(net_amount * 0.23)
+            product3_amount = round2(net_amount * 0.08)
+            product4_amount = round2(net_amount * 0.03)
+            product5_amount = round2(net_amount - single_amount - product2_amount - product3_amount - product4_amount)
+
+            multi_item_order_count = total_orders - single_order_count
+            multi_item_amount = round2(net_amount - single_amount)
+            same_category_order_count = round(multi_item_order_count * (18 / 28))
+            cross_category_order_count = multi_item_order_count - same_category_order_count
+            same_category_amount = round2(multi_item_amount * (22 / 36))
+            cross_category_amount = round2(multi_item_amount - same_category_amount)
+
             buckets = [
-                ("product1", "1种商品", 0.72),
-                ("product2", "2种商品", 0.19),
-                ("product3", "3种商品", 0.06),
-                ("product4", "4种商品", 0.02),
-                ("product5Plus", "5种及以上", 0.01),
+                ("product1", "1种商品", single_order_count, single_amount),
+                ("product2", "2种商品", product2_order_count, product2_amount),
+                ("product3", "3种商品", product3_order_count, product3_amount),
+                ("product4", "4种商品", product4_order_count, product4_amount),
+                ("product5Plus", "5种及以上", product5_order_count, product5_amount),
             ]
             bundle_daily.append({
                 "date": current_date,
@@ -126,22 +148,44 @@ def build_demo_bundle() -> dict:
                 "totalOrderCount": total_orders,
                 "totalAmount": net_amount,
                 "totalProductKinds": round(total_orders * 1.42),
-                "multiItemOrderCount": round(total_orders * 0.28),
-                "multiItemOrderShare": 0.28,
-                "multiItemAmount": round2(net_amount * 0.36),
-                "multiItemAmountShare": 0.36,
+                "multiItemOrderCount": multi_item_order_count,
+                "multiItemOrderShare": round(multi_item_order_count / total_orders, 4),
+                "multiItemAmount": multi_item_amount,
+                "multiItemAmountShare": round(multi_item_amount / net_amount, 4),
                 "buckets": [
                     {
                         "key": key,
                         "label": label,
-                        "orderCount": round(total_orders * share),
-                        "orderShare": share,
-                        "amount": round2(net_amount * share),
-                        "amountShare": share,
+                        "orderCount": bucket_order_count,
+                        "orderShare": round(bucket_order_count / total_orders, 4),
+                        "amount": bucket_amount,
+                        "amountShare": round(bucket_amount / net_amount, 4),
                     }
-                    for key, label, share in buckets
+                    for key, label, bucket_order_count, bucket_amount in buckets
                 ],
-                "categoryBundleTypes": [],
+                "categoryBundleTypes": [
+                    {
+                        "key": "singleProduct",
+                        "label": "非套购",
+                        "note": "1种商品",
+                        "orderCount": single_order_count,
+                        "amount": single_amount,
+                    },
+                    {
+                        "key": "sameCategory3",
+                        "label": "同三级类目套购",
+                        "note": "2种及以上商品，三级类目一致",
+                        "orderCount": same_category_order_count,
+                        "amount": same_category_amount,
+                    },
+                    {
+                        "key": "crossCategory3",
+                        "label": "跨三级类目套购",
+                        "note": "2种及以上商品，跨多个三级类目",
+                        "orderCount": cross_category_order_count,
+                        "amount": cross_category_amount,
+                    },
+                ],
             })
 
     total_net = sum(row["netAmount"] for row in sales_daily)
@@ -446,7 +490,7 @@ def patch_dashboard_api(source: str) -> str:
     )
     source = source.replace(
         'const COMMERCE_STATIC_DASHBOARD = "../static/commerce/current/dashboard.json";',
-        'const COMMERCE_STATIC_DASHBOARD = "./dashboard-demo.json";',
+        'const COMMERCE_STATIC_DASHBOARD = "./dashboard-demo.json?v=20260805-bundle-fix";',
     )
     source = source.replace(
         'const commerceState = { source: "static", batch: null, snapshotAt: null, degraded: true };',
@@ -454,6 +498,33 @@ def patch_dashboard_api(source: str) -> str:
     )
     source = source.replace('commerceState.source = "static"', 'commerceState.source = "dynamic"')
     source = source.replace('commerceState.degraded = true', 'commerceState.degraded = false')
+    source = source.replace(
+        '''      let payload;
+      if (canUseFetch()) {
+        try {
+          const response = await fetch(`${COMMERCE_API}/${DASHBOARD_API_ROUTE}`, { cache: "no-cache" });
+          if (!response.ok) throw new Error(`Commerce dashboard failed: ${response.status}`);
+          payload = await response.json();
+          commerceState.source = "dynamic"; commerceState.batch = payload.meta?.commerce_publish_batch_id || null;
+          commerceState.snapshotAt = payload.meta?.source_snapshot_at || null; commerceState.degraded = false;
+        } catch {
+          // The entire page falls back together, never individual legacy chunks.
+        }
+      }
+      if (!payload) {
+        const response = await fetch(COMMERCE_STATIC_DASHBOARD, { cache: "no-cache" });
+        if (!response.ok) throw new Error("No dashboard data source is available");
+        payload = await response.json();
+        commerceState.source = "dynamic"; commerceState.batch = payload.commerce_publish_batch_id || null;
+        commerceState.snapshotAt = null; commerceState.degraded = false;
+      }''',
+        '''      const response = await fetch(COMMERCE_STATIC_DASHBOARD, { cache: "no-cache" });
+      if (!response.ok) throw new Error("No dashboard data source is available");
+      const payload = await response.json();
+      commerceState.source = "dynamic"; commerceState.batch = payload.meta?.commerce_publish_batch_id || "AI-DEMO";
+      commerceState.snapshotAt = payload.meta?.source_snapshot_at || "AI_GENERATED_DEMO"; commerceState.degraded = false;''',
+        1,
+    )
     source = source.replace(
         'bundleBuckets: source.bundleBuckets || [',
         'rfmProfiles: source.rfmProfiles || {},\n      bundleBuckets: source.bundleBuckets || [',
@@ -607,6 +678,11 @@ def patch_aftersale_dashboard(source: str) -> str:
 
 def patch_dashboard_html(source: str) -> str:
     source = source.replace(
+        "</head>",
+        '''  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23132239'/%3E%3Ccircle cx='44' cy='20' r='8' fill='%236574e8'/%3E%3Cpath d='M16 18h18v8H24v8h10v8H24v8h-8z' fill='%23fffdf8'/%3E%3C/svg%3E">\n</head>''',
+        1,
+    )
+    source = source.replace(
         'window.JD_AFTERSALE_LIVE_BASE = window.location.protocol === "http:" ? `${window.location.protocol}//${window.location.hostname}:8765` : "http://127.0.0.1:8765";',
         'window.JD_AFTERSALE_LIVE_BASE = "./demo-api";',
     )
@@ -614,12 +690,27 @@ def patch_dashboard_html(source: str) -> str:
     source = source.replace("推广分析（开发中）", "推广分析")
     source = source.replace("数据报表（待开发）", "数据报表")
     source = source.replace(
+        '''        const bucket = totals[dataKey]?.[bucketDef.key] || {
+          label: bucketDef.label,
+          note: bucketDef.note,
+          orderCount: 0,
+          amount: 0,
+        };''',
+        '''        const bucket = totals[dataKey]?.[bucketDef.key] || bucketDef || {
+          label: bucketDef.label,
+          note: bucketDef.note,
+          orderCount: 0,
+          amount: 0,
+        };''',
+        1,
+    )
+    source = source.replace(
         'const source = state.source === "dynamic" ? "统一本地服务" : "静态快照";\n      const suffix = state.degraded ? "（服务不可用）" : "";\n      dataSourceStatus.textContent = `数据来源：${source}${suffix}｜批次：${state.batch || "-"}`;',
         'dataSourceStatus.textContent = "数据来源：AI 演示数据｜批次：AI-DEMO";',
     )
     source = source.replace(
         '<script src="jd_dashboard_api.js?v=20260720-promotion-api-scope"></script>',
-        '<script src="jd_promotion_demo.js"></script>\n  <script src="jd_dashboard_api.js?v=20260720-promotion-api-scope"></script>',
+        '<script src="jd_promotion_demo.js?v=20260805-bundle-fix"></script>\n  <script src="jd_dashboard_api.js?v=20260805-bundle-fix"></script>',
         1,
     )
     disclosure = '''
