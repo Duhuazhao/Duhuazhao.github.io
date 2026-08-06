@@ -184,6 +184,7 @@ assert.match(html, /减少机械重复工作带来的时间与人力消耗/);
 assert.match(html, /提升基础任务的准确性与一致性/);
 assert.match(html, /AI 团队协作管理中台/);
 assert.match(html, /杜华钊 · 电商经营项目负责人方向/);
+assert.match(html, /目标方向：京东运营主管、店铺经营负责人、电商经营项目负责人；同时关注消费品、互联网等行业的用户增长与用户运营岗位。/);
 assert.equal((html.match(/class="desktop-demo-note"/g) || []).length, 2, "both interactive demos should carry the PC experience notice");
 assert.equal((html.match(/演示功能针对 PC 端开发，请使用 PC 进行完整体验；手机端暂未适配。/g) || []).length, 2);
 assert.match(html, /assets\/operations-dashboard\/preview-ai-demo\.png/);
