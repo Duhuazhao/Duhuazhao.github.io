@@ -1530,6 +1530,7 @@
     }
 
     .project-open {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
@@ -1541,11 +1542,21 @@
       border: 1px solid rgba(var(--brand-rgb), 0.72);
       border-radius: 999px;
       background: rgba(var(--brand-rgb), 0.18);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.045), 0 8px 24px rgba(3, 14, 29, 0.16);
+      box-shadow: none;
       color: var(--paper);
       font-weight: 750;
       cursor: pointer;
       transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .project-open::after {
+      position: absolute;
+      inset: -2px;
+      border: 1px solid rgba(var(--brand-rgb), 0.78);
+      border-radius: inherit;
+      content: "";
+      pointer-events: none;
+      animation: project-detail-ring 3.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
     }
 
     .experience-actions {
@@ -1593,13 +1604,37 @@
       line-height: 1;
       place-items: center;
       transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+      animation: project-detail-arrow 3.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+
+    @keyframes project-detail-ring {
+      0%, 58%, 100% { opacity: 0; transform: scale(1); }
+      68% { opacity: 0.5; }
+      84% { opacity: 0; transform: scale(1.055); }
+    }
+
+    @keyframes project-detail-arrow {
+      0%, 58%, 100% { transform: translateX(0); }
+      68% { transform: translateX(4px); }
+      76% { transform: translateX(0); }
+      84% { transform: translateX(4px); }
+      92% { transform: translateX(0); }
     }
 
     .project-open:hover {
       border-color: var(--brand-color);
       background: rgba(var(--brand-rgb), 0.34);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), 0 12px 28px rgba(3, 14, 29, 0.22);
+      box-shadow: 0 6px 8px rgba(3, 14, 29, 0.2);
       transform: translateY(-2px);
+    }
+
+    .project-open:hover::after {
+      opacity: 0;
+      animation: none;
+    }
+
+    .project-open:hover .project-open-arrow {
+      animation: none;
     }
 
     .project-open:hover .project-open-arrow {
@@ -6034,7 +6069,7 @@
               <p>负责月子服与哺乳文胸类目，围绕类目增长、新品孵化、价格带、用户权益与推广效率统筹经营动作。</p>
               <div class="experience-outcomes"><span>类目退款后销售同比 +23%</span><span>新品进入行业前 5</span><span>推广费率下降约 7pp</span></div>
               <div class="experience-actions">
-                <button class="project-open" type="button" data-case="manxi"><span class="project-open-label">查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
+                <button class="project-open" type="button" data-case="manxi"><span class="project-open-label">点击可查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
                 <span class="experience-note-count"><strong>7</strong><span>篇经营笔记</span></span>
               </div>
             </article>
@@ -6054,7 +6089,7 @@
               <p>以店铺 PM 角色衔接京东采销、品牌市场部、品类运营以及客服、直播、会员等端口，负责全店价盘、资源需求与运营动作的信息拉齐、排期和交付把控。</p>
               <div class="experience-outcomes"><span>双11全盘排期落地</span><span>多方需求按表执行</span><span>各节点按期上线</span></div>
               <div class="experience-actions">
-                <button class="project-open" type="button" data-case="by-health"><span class="project-open-label">查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
+                <button class="project-open" type="button" data-case="by-health"><span class="project-open-label">点击可查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
                 <span class="experience-note-count"><strong>8</strong><span>篇经营笔记</span></span>
               </div>
             </article>
@@ -6074,7 +6109,7 @@
               <p>主责年度 GMV 约 5000 万元的官方旗舰店，以销售计划为起点，统筹货品库存、用户增长、利润效率与跨端口协同，持续跟踪经营偏差并推动调整落地。</p>
               <div class="experience-outcomes"><span>月末库存周转天数持续 ≤ 60 天</span><span>双店会员成交金额渗透约 40% → 70%</span><span>3 个月首次复购约 20% → 40%</span></div>
               <div class="experience-actions">
-                <button class="project-open" type="button" data-case="mead-johnson"><span class="project-open-label">查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
+                <button class="project-open" type="button" data-case="mead-johnson"><span class="project-open-label">点击可查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
                 <span class="experience-note-count"><strong>12</strong><span>篇经营笔记</span></span>
               </div>
             </article>
@@ -6094,7 +6129,7 @@
               <p>从运营专员晋升运营主管，负责京东自营店铺增长与商品结构建设：打造两款线上专供床垫承接核心及年轻用户市场，通过组套带动关联类目，并带教实习生完成转正。</p>
               <div class="experience-outcomes"><span>年销售不足 700 万 → 约 2000 万</span><span>核心爆款累计约 1200 万</span><span>组套关联品出货同比 +30%+</span><span>运营专员 → 运营主管</span></div>
               <div class="experience-actions">
-                <button class="project-open" type="button" data-case="suibao"><span class="project-open-label">查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
+                <button class="project-open" type="button" data-case="suibao"><span class="project-open-label">点击可查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
                 <span class="experience-note-count"><strong>12</strong><span>篇经营笔记</span></span>
               </div>
             </article>
@@ -6114,7 +6149,7 @@
               <p>从商品维护等基础工作起步，在主管审核下逐步独立承担活动方案、平台报名、价格与赠品设置、页面需求、快车与海投及上线检查；将零食类目的“199减100”玩法迁移到洗护囤货场景，推动店铺促销机制升级。</p>
               <div class="experience-outcomes"><span>阶段销售额同比增长 30%+</span><span>双11销售额同比增长 40%+</span><span>全店客单价提升约 15%</span><span>接管投放后 ROI 保持 5+</span></div>
               <div class="experience-actions">
-                <button class="project-open" type="button" data-case="ashley-internship"><span class="project-open-label">查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
+                <button class="project-open" type="button" data-case="ashley-internship"><span class="project-open-label">点击可查看经营详情</span><span class="project-open-arrow" aria-hidden="true">→</span></button>
                 <span class="experience-note-count"><strong>7</strong><span>篇经营笔记</span></span>
               </div>
             </article>

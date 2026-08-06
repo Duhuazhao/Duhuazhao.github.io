@@ -277,8 +277,10 @@ assert.equal([...html.matchAll(/class="case-product-stage(?:\s|"|--)/g)].length,
 assert.doesNotMatch(html, /用户在线上看到的商品缺少差异化理由/);
 assert.doesNotMatch(html, /公司需要一款真正为电商场景设计的产品/);
 assert.doesNotMatch(html, /目标用户更关注护脊、支撑与睡眠质量/);
-assert.equal([...html.matchAll(/class="project-open-label">查看经营详情<\/span>/g)].length, 5, "each experience needs a clear business detail CTA");
+assert.equal([...html.matchAll(/class="project-open-label">点击可查看经营详情<\/span>/g)].length, 5, "each experience needs an explicit clickable business detail CTA");
 assert.equal([...html.matchAll(/class="project-open-arrow"/g)].length, 5, "each business detail CTA needs a visible arrow affordance");
+assert.match(html, /@keyframes\s+project-detail-ring/);
+assert.match(html, /@keyframes\s+project-detail-arrow/);
 assert.doesNotMatch(html, /查看代表案例/);
 assert.equal([...html.matchAll(/class="brand-watermark/g)].length, 5, "each work experience needs one brand watermark");
 assert.match(html, /assets\/brand-logos\/by-health\.png/);
