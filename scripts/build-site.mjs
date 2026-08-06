@@ -9,7 +9,7 @@ const assetDefinitions = [
   ["/assets/operating-notes.js", "assets/operating-notes.js", "text/javascript; charset=utf-8"],
   ["/assets/industry-notes.js", "assets/industry-notes.js", "text/javascript; charset=utf-8"],
   ["/assets/note-methodology.js", "assets/note-methodology.js", "text/javascript; charset=utf-8"],
-  ["/assets/du-huazhao-profile-v2.png", "assets/du-huazhao-profile-v2.png", "image/png"],
+  ["/assets/du-huazhao-profile-2026.png", "assets/du-huazhao-profile-2026.png", "image/png"],
   ["/assets/brand-logos/by-health.png", "assets/brand-logos/by-health.png", "image/png"],
   ["/assets/brand-logos/mead-johnson.png", "assets/brand-logos/mead-johnson.png", "image/png"],
   ["/assets/brand-logos/suibao-icon.png", "assets/brand-logos/suibao-icon.png", "image/png"],

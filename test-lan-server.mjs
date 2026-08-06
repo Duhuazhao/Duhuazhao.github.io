@@ -56,7 +56,7 @@ try {
   assert.match(noteMethodology.headers.get("content-type") || "", /javascript/);
   assert.match(await noteMethodology.text(), /window\.NOTE_METHOD_SERIES/);
 
-  const profilePhoto = await fetch(`http://127.0.0.1:${port}/assets/du-huazhao-profile-v2.png`);
+  const profilePhoto = await fetch(`http://127.0.0.1:${port}/assets/du-huazhao-profile-2026.png`);
   assert.equal(profilePhoto.status, 200);
   assert.equal(profilePhoto.headers.get("content-type"), "image/png");
   assert.ok((await profilePhoto.arrayBuffer()).byteLength > 1000);

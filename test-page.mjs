@@ -43,7 +43,7 @@ assert.match(html, /id="noteDialog"/);
 assert.match(html, /assets\/operating-notes\.js/);
 assert.match(html, /assets\/industry-notes\.js/);
 assert.match(html, /assets\/note-methodology\.js/);
-assert.match(html, /assets\/du-huazhao-profile-v2\.png/);
+assert.match(html, /assets\/du-huazhao-profile-2026\.png/);
 assert.match(html, /yyaa2882@163\.com/);
 assert.match(html, /离职求职中/);
 assert.doesNotMatch(html, /手机号/);

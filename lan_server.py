@@ -100,7 +100,7 @@ def main() -> None:
     operating_notes = index_path.with_name("assets") / "operating-notes.js"
     industry_notes = index_path.with_name("assets") / "industry-notes.js"
     note_methodology = index_path.with_name("assets") / "note-methodology.js"
-    profile_photo = index_path.with_name("assets") / "du-huazhao-profile-v2.png"
+    profile_photo = index_path.with_name("assets") / "du-huazhao-profile-2026.png"
     brand_logo_dir = index_path.with_name("assets") / "brand-logos"
     operations_dashboard_dir = index_path.with_name("assets") / "operations-dashboard"
     public_assets = {
@@ -117,7 +117,7 @@ def main() -> None:
             note_methodology.read_bytes(),
             "text/javascript; charset=utf-8",
         ),
-        "/assets/du-huazhao-profile-v2.png": (
+        "/assets/du-huazhao-profile-2026.png": (
             profile_photo.read_bytes(),
             "image/png",
         ),
